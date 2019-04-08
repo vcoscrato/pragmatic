@@ -15,28 +15,25 @@ devtools::install_github("vcoscrato/pragmatic")
 This example performs pragmatic hypothesis calculation on for a t-test.
 
 ```{r}
-# Generate original data
+# Generate data
 data <- rnorm(100)
 
 # Define the log-likelihood function
 log_f = function(x, mu, sigma) {
-  output = 0
-  for(i in 1:length(x))
-    output = output + log(sigma) + log(sqrt(2*pi))^(-1)) + -((x[i]-mu)^2/2*sigma^2))
-  return(output)
+  sum(log(dnorm(x, mu, sigma))
 }
 
-# Estimate the variance
-sigma = var(data)
+# Estimate the data's standard deviation
+sigma_data = sd(data)
 
 # Define a secondary function that calculates the log-likelihood considering estimated variance
 log_f_sigma = function(x, mu) {
-  output = log_f(x, mu, sigma)
+  output = log_f(x, mu, sigma_data)
 }
 
 #Define a function that generates samples considering estimated variance
 samples = function(B, mu) {
-  return(rnorm(B, mu, sigma))
+  return(rnorm(B, mu, sigma_data))
 }
 
 # Calculate the pragmatic hypothesis and summarize it
