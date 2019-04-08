@@ -1,6 +1,19 @@
 # pragmatic
 Pragmatic hypothesis calculation
 
+## Installation
+
+You can install pragmatic directly into R from github with devtools:
+
+``` r
+if(!("devtools" %in% rownames(installed.packages())))
+  install.packages('devtools')
+devtools::install_github("vcoscrato/pragmatic")
+```
+
+## Example
+This example performs pragmatic hypothesis calculation on for a t-test.
+
 ```{r}
 # Generate original data
 data <- rnorm(100)
@@ -30,6 +43,3 @@ samples = function(B, mu) {
 results = pragmatic(null = 0, epsilon = 0.6, log_f = log_f_sigma, generate_samples = samples, B = 10000, par_grid = seq(-1, 1, length = 201))
 summary(results)
 ```
-
-[1] "Pragmatic hypothesis:"
-[1] "(-0.02, 0.02)"
