@@ -20,7 +20,7 @@ data <- rnorm(100)
 
 # Define the log-likelihood function
 log_f = function(x, mu, sigma) {
-  sum(log(dnorm(x, mu, sigma))
+  sum(dnorm(x, mu, sigma, log = TRUE))
 }
 
 # Estimate the data's standard deviation
