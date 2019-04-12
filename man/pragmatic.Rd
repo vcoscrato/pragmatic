@@ -4,31 +4,36 @@
 \alias{pragmatic}
 \title{Pragmatic hypothesis calculation}
 \usage{
-pragmatic(null, epsilon, log_f, generate_samples, B, par_grid = NULL,
-  grid_lim = NULL, grid_dots = NULL)
+pragmatic(null, epsilon, log_f, generate_samples, B = 1000,
+  connected = TRUE, par_grid = NULL, symmetrical = FALSE, ...)
 }
 \arguments{
-\item{null}{The original null hypothesis point.}
+\item{null}{Numeric. The original null hypothesis point.}
 
-\item{epsilon}{Dissimilarity threshold.}
+\item{epsilon}{Numeric. The desired dissimilarity threshold.}
 
-\item{log_f}{A function that computes the log-likelihood of the new experiment.}
+\item{log_f}{Function. A function that computes the log-likelihood of a new experiment. See also 'Examples'.}
 
-\item{generate_samples}{A funtion that generates new samples from the original distribution.}
+\item{generate_samples}{Function. A funtion that generates new samples from the original distribution. See also 'Examples'.}
 
-\item{B}{Number of Monte Carlo simulations.}
+\item{B}{Numeric. Number of Monte Carlo simulations. Higher values might take longer to run but lead to more accurate results. Default set to 1000 simulations.}
 
-\item{par_grid}{Grid of parameters to test.}
+\item{connected}{Boolean. For default, the pragmatic function assumes the real pragmatic is connect (a convex set), if this does not suit a particular example, set this parameter to FALSE.}
 
-\item{grid_lim}{If par_grid is not defined, this controls the limits of an internal constructed grid.}
+\item{par_grid}{Numeric vector. If connected = FALSE, par_grid have to be a grid of points to test belonginess to the pragmatic. Ignored if connected = TRUE.}
 
-\item{grid_dots}{If par_grid is not defined, this controls the length of an internal constructed grid.}
+\item{symmetrical}{Boolean. If one knows in advance that the real pragmatic is symmetrical around the null hypothesis, setting this to TRUE might speed up calculations and lead to more accurate results.}
+
+\item{...}{Additional arguments to be passed to lower level functions.}
 }
 \value{
-A list containing: The used parameter grid, the used threshold, and a logical vector indicating which of the parameters from the grid belongs to the pragmatic hypothesis.
+A string determining the pragmatic hypothesis set.
 }
 \description{
 The pragmatic function calculates a pragmatic hypothesis basic on a simple one.
+}
+\details{
+The pragmatic function performs a grid search for the pragmatic hypothesis related to a simple one. For default, the function assumes thats the real pragmatic is a convex set, and them, performs a conservative binary search to find the set limits. When there is no information weather the pragmatic is a convex set, a user defined grid is needed to perform the search.
 }
 \examples{
 
@@ -56,8 +61,6 @@ samples = function(B, mu) {
   return(rnorm(B, mu, sigma))
 }
 
-# Calculate the pragmatic hypothesis and summarize it
-results = pragmatic(null = 0, epsilon = 0.6, log_f = log_f_sigma, generate_samples = samples, B = 10000, par_grid = seq(-1, 1, length = 201))
-summary(results)
-
+# Calculate the pragmatic hypothesis
+pragmatic(null = 0, epsilon = 0.6, log_f = log_f_sigma, generate_samples = samples, symmetrical = TRUE)
 }
