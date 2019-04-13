@@ -36,8 +36,8 @@
 #' }
 #'
 #' #Define a function that generate samples considering estimated variance
-#' samples = function(B, mu) {
-#'   rnorm(B, mu, sigma_data)
+#' samples = function(mu) {
+#'   rnorm(10, mu, sigma_data) # 10 is the number of new samples Z
 #' }
 #'
 #' # Calculate the pragmatic hypothesis
@@ -97,16 +97,25 @@ pragmatic <- function(null, epsilon, log_f, generate_samples, B = 1000, connecte
 
 .unconnected_pragmatic <- function(null, epsilon, log_f, generate_samples, B, par_grid) {
 
-  z0 <- generate_samples(B, null)
+  browser()
+
+  z0 <- replicate(B, generate_samples(null))
+
+  log_f_z0_null <- apply(z0, 2, log_f, mu = null)
 
   pragmatic <- logical(length = length(par_grid))
 
   for (i in 1:length(par_grid)) {
 
-    z1 <- generate_samples(B, par_grid[i])
+    log_f_z0_par <- apply(z0, 2, log_f, mu = par_grid[i])
 
-    theta0 <- mean(log_f(z0, null) > log_f(z0, par_grid[i]))
-    theta1 <- mean(log_f(z1, par_grid[i]) > log_f(z1, null))
+    z1 <- replicate(B, generate_samples(par_grid[i]))
+
+    log_f_z1_null <- apply(z1, 2, log_f, mu = null)
+    log_f_z1_par <- apply(z1, 2, log_f, mu = par_grid[i])
+
+    theta0 <- mean(log_f_z0_null > log_f_z0_par)
+    theta1 <- mean(log_f_z1_par > log_f_z1_null)
     dist <- (theta0 + theta1)/2
 
     pragmatic[i] <- (dist < epsilon)
@@ -121,7 +130,8 @@ pragmatic <- function(null, epsilon, log_f, generate_samples, B = 1000, connecte
 
 .connected_pragmatic <- function(null, epsilon, log_f, generate_samples, B, symmetrical = FALSE, step = 0.999, start = 0.2) {
 
-  z0 <- generate_samples(B, null)
+  z0 <- replicate(B, generate_samples(null))
+  log_f_z0_null <- apply(z0, 2, log_f, mu = null)
 
   pragmatic <- c(null, null)
 
@@ -131,10 +141,15 @@ pragmatic <- function(null, epsilon, log_f, generate_samples, B = 1000, connecte
 
   repeat {
 
-    z1 <- generate_samples(B, dot)
+    log_f_z0_par <- apply(z0, 2, log_f, mu = dot)
 
-    theta0 <- mean(log_f(z0, null) > log_f(z0, dot))
-    theta1 <- mean(log_f(z1, dot) > log_f(z1, null))
+    z1 <- replicate(B, generate_samples(dot))
+
+    log_f_z1_null <- apply(z1, 2, log_f, mu = null)
+    log_f_z1_par <- apply(z1, 2, log_f, mu = dot)
+
+    theta0 <- mean(log_f_z0_null > log_f_z0_par)
+    theta1 <- mean(log_f_z1_par > log_f_z1_null)
     dist <- (theta0 + theta1)/2
 
     if(dist < epsilon) {
@@ -181,10 +196,15 @@ pragmatic <- function(null, epsilon, log_f, generate_samples, B = 1000, connecte
 
       repeat {
 
-        z1 <- generate_samples(B, dot)
+        log_f_z0_par <- apply(z0, 2, log_f, mu = dot)
 
-        theta0 <- mean(log_f(z0, null) > log_f(z0, dot))
-        theta1 <- mean(log_f(z1, dot) > log_f(z1, null))
+        z1 <- replicate(B, generate_samples(dot))
+
+        log_f_z1_null <- apply(z1, 2, log_f, mu = null)
+        log_f_z1_par <- apply(z1, 2, log_f, mu = dot)
+
+        theta0 <- mean(log_f_z0_null > log_f_z0_par)
+        theta1 <- mean(log_f_z1_par > log_f_z1_null)
         dist <- (theta0 + theta1)/2
 
         if(dist < epsilon) {
