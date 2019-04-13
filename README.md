@@ -32,8 +32,8 @@ log_f_sigma = function(x, mu) {
 }
 
 #Define a function that generate samples considering estimated variance
-samples = function(B, mu) {
-  rnorm(B, mu, sigma_data)
+samples = function(mu) {
+  rnorm(10, mu, sigma_data) # 10 is the number of new samples Z
 }
 
 # Calculate the pragmatic hypothesis
